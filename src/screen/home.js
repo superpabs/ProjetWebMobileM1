@@ -1,11 +1,10 @@
 import React, { useState } from "react"
 import styled from 'styled-components'
 import axios from 'axios'
-import { Image } from "react-native";
 
 const apiurl = 'http://www.omdbapi.com/?i=tt3896198&apikey=b8da74de'
 
-const App = () => {
+const App = props => {
 
     const [state, setState] = useState({
         s: "Search a movie...",
@@ -13,18 +12,33 @@ const App = () => {
         selected: {}
     })
 
+    const [favorites, setFavorites] = useState([]);
+
     const search = () => {
         axios(apiurl + "&s=" + state.s).then(({ data }) => {
-            let results = data.Search
+            let results = data.Search || [];
+            console.log(results)
             setState(prevState => {
                 return { ...prevState, results: results }
             })
         })
     }
 
+    const addToFavorites = (movie) => {
+        setFavorites([...favorites, movie]);
+    };
+
+    const handleNavigation = page => {
+        props.navigation.navigate(page);
+    };
+
     return (
         <Container>
             <StyledTextTitle>Movie DB</StyledTextTitle>
+            
+            <StyledButton onPress={() => handleNavigation('Favorites')}>
+                <StyledText>Mes favoris</StyledText>
+            </StyledButton>
 
             <InputContainer>
                 <StyledTextInput
@@ -39,16 +53,9 @@ const App = () => {
             <ResultsContainer>
                 {state.results.map(result => (
                     <ResultContainer key={result.imdbID}>
-                        <Image
-                            source={{ uri: result.Poster }}
-                            style={{
-                                width: '100%',
-                                height: 300
-                            }}
-                            resizeMode="cover"
-                        />
-
-                        <StyledMovieTitle>{result.Title}</StyledMovieTitle>
+                        <StyledMovieTitle>{result.Type} - {result.Title}</StyledMovieTitle>
+                        <StyledMovieInfos>{result.Plot}</StyledMovieInfos>
+                        <StyledButton onPress={() => addToFavorites(result)}>Ajouter aux favoris</StyledButton>
                     </ResultContainer>
                 ))}
             </ResultsContainer>
@@ -102,6 +109,26 @@ const StyledMovieTitle = styled.Text`
     font-weight: 700;
     padding: 20px;
     background-color: #445565;
+`;
+
+const StyledMovieInfos = styled.Text`
+    color: #fff;
+    font-size: 12px;
+    font-weight: 400;
+    padding: 20px;
+    background-color: #445565;
+`;
+
+const StyledButton = styled.TouchableOpacity`
+    background-color: grey;
+    color: black;
+    margin-bottom: 10px;
+    padding: 10px;
+`
+
+const StyledText = styled.Text`
+    color: white;
+    font-size: 16px;
 `;
 
 export default App;

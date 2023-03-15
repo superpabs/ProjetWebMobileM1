@@ -16,7 +16,7 @@ const Routes = () => {
                         headerShown: false,
                     }}>
                     <Stack.Screen name='Home' component={Home} />
-                    {/* <Stack.Screen name='Favorites' component={Favorites} /> */}
+                    <Stack.Screen name='Favorites' component={Favorites} />
                 </Stack.Navigator>
             </NavigationContainer>
         </GlobalSafeArea>
