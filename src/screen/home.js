@@ -1,13 +1,14 @@
-import axios from "axios"
-import React, { useState } from "react"
+import axios from 'axios'
+import React, { useState } from 'react'
 import styled from 'styled-components'
+import { Image } from 'react-native'
 
 const Home = props => {
 
     const apiurl = 'http://www.omdbapi.com/?i=tt3896198&apikey=513876dc'
 
     const [searchMovie, setSearchMovie] = useState({
-        s: "...",
+        s: "Batman",
         searchResults: [],
         selected: {}
     })
@@ -21,7 +22,7 @@ const Home = props => {
     const search = () => {
         axios(apiurl + "&s=" + searchMovie.s).then(({ data }) => {
             let searchResults = data.Search;
-            console.log(searchResults)
+            // console.log(searchResults)
             setSearchMovie(prevSearch => {
                 return { ...prevSearch, searchResults: searchResults }
             })
@@ -30,6 +31,7 @@ const Home = props => {
 
     const addToFavorites = (movie) => {
         setFavorites([...favorites, movie])
+        console.log(setFavorites)
     }
 
     return (
@@ -43,7 +45,7 @@ const Home = props => {
             <SearchContainer>
                 <SearchInput
                     onChangeText={text => setSearchMovie(prevSearch => {
-                        return {... prevSearch, s: text}
+                        return { ...prevSearch, s: text }
                     })}
                     onSubmitEditing={search}
                     value={searchMovie.s}
@@ -52,13 +54,25 @@ const Home = props => {
 
             <MoviesContainer>
                 {searchMovie.searchResults.map(movie => (
-                    <MovieList key={map.imdbID}>
+                    <MovieList key={movie.imdbID}>
+                        {/* <Image
+                            source={{ uri: movie.Poster }}
+                            style={{
+                                width: 300,
+                                height: 300
+                            }}
+                            resizeMode="cover"
+                        /> */}
                         <MovieTitle>{movie.Title}</MovieTitle>
-                        <StyledButton onPress={() => addToFavorites(movie)}>Ajouter aux favoris</StyledButton>
+
+                        <FavoriteContainer>
+                            <FavoriteButton onPress={() => addToFavorites(movie)}>
+                                <StyledText>Ajouter aux favoris</StyledText>
+                            </FavoriteButton>
+                        </FavoriteContainer>
                     </MovieList>
                 ))}
             </MoviesContainer>
-
         </Container>
     )
 }
@@ -89,6 +103,7 @@ const StyledButton = styled.TouchableOpacity`
 const StyledText = styled.Text`
     color: white;
     font-size: 16px;
+    text-align: center;
 `;
 
 const SearchContainer = styled.View`
@@ -103,6 +118,8 @@ const SearchInput = styled.TextInput`
     background-color: #fff;
     border-radius: 8px;
     margin-bottom: 40px;
+    border: 2px;
+    border-color: #FF4C4C;
 `;
 
 const MoviesContainer = styled.ScrollView`
@@ -111,8 +128,32 @@ const MoviesContainer = styled.ScrollView`
 
 const MovieList = styled.View`
     flex: 1;
-    width: 370px;
     margin-bottom: 20px;
+    align-items: center;
 `;
+
+const MovieTitle = styled.Text`
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 20px;
+    background-color: #445565;
+    width: 370px;
+`;
+
+const FavoriteContainer = styled.View`
+    flex: 1;
+    width: 200px;
+    align-items: center;
+`
+
+const FavoriteButton = styled.TouchableOpacity`
+    color: white;
+    font-size: 16px;
+    padding: 10px;
+    background-color: #FF4C4C;
+    border-radius: 8px;
+    margin-top: 10px;
+`
 
 export default Home
