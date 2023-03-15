@@ -1,10 +1,8 @@
-import { Text } from "react-native";
+import React from "react";
+import Routes from "./src/config/routes";
 
 const App = () => {
+    return <Routes />
+}
 
-    return (
-        <Text>Hello World !</Text>
-    );
-};
-
-export default App;
+export default App
