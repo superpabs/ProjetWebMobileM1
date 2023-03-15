@@ -1,67 +1,67 @@
+import axios from "axios"
 import React, { useState } from "react"
 import styled from 'styled-components'
-import axios from 'axios'
 
-const apiurl = 'http://www.omdbapi.com/?i=tt3896198&apikey=b8da74de'
+const Home = props => {
 
-const App = props => {
+    const apiurl = 'http://www.omdbapi.com/?i=tt3896198&apikey=513876dc'
 
-    const [state, setState] = useState({
-        s: "Search a movie...",
-        results: [],
+    const [searchMovie, setSearchMovie] = useState({
+        s: "...",
+        searchResults: [],
         selected: {}
     })
 
     const [favorites, setFavorites] = useState([]);
 
+    const handleNavigation = page => {
+        props.navigation.navigate(page)
+    }
+
     const search = () => {
-        axios(apiurl + "&s=" + state.s).then(({ data }) => {
-            let results = data.Search || [];
-            console.log(results)
-            setState(prevState => {
-                return { ...prevState, results: results }
+        axios(apiurl + "&s=" + searchMovie.s).then(({ data }) => {
+            let searchResults = data.Search;
+            console.log(searchResults)
+            setSearchMovie(prevSearch => {
+                return { ...prevSearch, searchResults: searchResults }
             })
         })
     }
 
     const addToFavorites = (movie) => {
-        setFavorites([...favorites, movie]);
-    };
-
-    const handleNavigation = page => {
-        props.navigation.navigate(page);
-    };
+        setFavorites([...favorites, movie])
+    }
 
     return (
         <Container>
-            <StyledTextTitle>Movie DB</StyledTextTitle>
-            
+            <PageTitle>Movie DB</PageTitle>
+
             <StyledButton onPress={() => handleNavigation('Favorites')}>
                 <StyledText>Mes favoris</StyledText>
             </StyledButton>
 
-            <InputContainer>
-                <StyledTextInput
-                    onChangeText={text => setState(prevState => {
-                        return { ...prevState, s: text }
+            <SearchContainer>
+                <SearchInput
+                    onChangeText={text => setSearchMovie(prevSearch => {
+                        return {... prevSearch, s: text}
                     })}
-                    value={state.s}
                     onSubmitEditing={search}
+                    value={searchMovie.s}
                 />
-            </InputContainer>
+            </SearchContainer>
 
-            <ResultsContainer>
-                {state.results.map(result => (
-                    <ResultContainer key={result.imdbID}>
-                        <StyledMovieTitle>{result.Type} - {result.Title}</StyledMovieTitle>
-                        <StyledMovieInfos>{result.Plot}</StyledMovieInfos>
-                        <StyledButton onPress={() => addToFavorites(result)}>Ajouter aux favoris</StyledButton>
-                    </ResultContainer>
+            <MoviesContainer>
+                {searchMovie.searchResults.map(movie => (
+                    <MovieList key={map.imdbID}>
+                        <MovieTitle>{movie.Title}</MovieTitle>
+                        <StyledButton onPress={() => addToFavorites(movie)}>Ajouter aux favoris</StyledButton>
+                    </MovieList>
                 ))}
-            </ResultsContainer>
+            </MoviesContainer>
+
         </Container>
-    );
-};
+    )
+}
 
 const Container = styled.View`
     flex: 1;
@@ -71,52 +71,12 @@ const Container = styled.View`
     padding-top: 70px;
 `;
 
-const StyledTextTitle = styled.Text`
+const PageTitle = styled.Text`
     color: #fff;
     font-size: 32px;
     font-weight: 700;
     text-align: center;
     margin-bottom: 20px;
-`;
-
-const InputContainer = styled.View`
-    margin: 4px;
-`;
-
-const StyledTextInput = styled.TextInput`
-    font-size: 20px;
-    font-weight: 300;
-    padding: 20px;
-    width: 370px;
-    background-color: #fff;
-    border-radius: 8px;
-    margin-bottom: 40px;
-`;
-
-const ResultsContainer = styled.ScrollView`
-    flex: 1;
-`;
-
-const ResultContainer = styled.View`
-    flex: 1;
-    width: 370px;
-    margin-bottom: 20px;
-`;
-
-const StyledMovieTitle = styled.Text`
-    color: #fff;
-    font-size: 18px;
-    font-weight: 700;
-    padding: 20px;
-    background-color: #445565;
-`;
-
-const StyledMovieInfos = styled.Text`
-    color: #fff;
-    font-size: 12px;
-    font-weight: 400;
-    padding: 20px;
-    background-color: #445565;
 `;
 
 const StyledButton = styled.TouchableOpacity`
@@ -131,4 +91,28 @@ const StyledText = styled.Text`
     font-size: 16px;
 `;
 
-export default App;
+const SearchContainer = styled.View`
+    margin: 4px;
+`;
+
+const SearchInput = styled.TextInput`
+    font-size: 20px;
+    font-weight: 300;
+    padding: 20px;
+    width: 370px;
+    background-color: #fff;
+    border-radius: 8px;
+    margin-bottom: 40px;
+`;
+
+const MoviesContainer = styled.ScrollView`
+    flex: 1;
+`;
+
+const MovieList = styled.View`
+    flex: 1;
+    width: 370px;
+    margin-bottom: 20px;
+`;
+
+export default Home
