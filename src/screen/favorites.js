@@ -5,17 +5,11 @@ const Favorites = props => {
 
     const [favorites, setFavorites] = useState([]);
 
-    const handleNavigation = page => {
-        props.navigation.navigate(page);
-    };
 
     return (
         <FavoritesList>
-            <StyledButton onPress={() => handleNavigation('Home')}>
-                <StyledText>Retour</StyledText>
-            </StyledButton>
-            
-            <PageTitle>Favorites</PageTitle>
+            <PageTitle>Favoris</PageTitle>
+
             {favorites.map((result) => (
                 <FavoriteContainer key={result.imdbID}>
                     <StyledMovieTitle>{result.Type} - {result.Title}</StyledMovieTitle>
@@ -31,7 +25,7 @@ const FavoritesList = styled.View`
     background-color: #223343;
     align-items: center;
     justify-content: flex-start;
-    padding-top: 70px;
+    padding-top: 30px;
 `
 
 const FavoriteContainer = styled.View`

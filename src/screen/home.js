@@ -14,10 +14,7 @@ const Home = props => {
     })
 
     const [favorites, setFavorites] = useState([]);
-
-    const handleNavigation = page => {
-        props.navigation.navigate(page)
-    }
+    const [watchList, setWatchList] = useState([]);
 
     const search = () => {
         axios(apiurl + "&s=" + searchMovie.s).then(({ data }) => {
@@ -34,13 +31,14 @@ const Home = props => {
         console.log(setFavorites)
     }
 
+    const addToWatchList = (movie) => {
+        setWatchList([...watchList, movie])
+        console.log(setWatchList)
+    }
+
     return (
         <Container>
             <PageTitle>Movie DB</PageTitle>
-
-            <StyledButton onPress={() => handleNavigation('Favorites')}>
-                <StyledText>Mes favoris</StyledText>
-            </StyledButton>
 
             <SearchContainer>
                 <SearchInput
@@ -55,21 +53,25 @@ const Home = props => {
             <MoviesContainer>
                 {searchMovie.searchResults.map(movie => (
                     <MovieList key={movie.imdbID}>
-                        {/* <Image
+                        <Image
                             source={{ uri: movie.Poster }}
                             style={{
-                                width: 300,
-                                height: 300
+                                width: 270,
+                                height: 270
                             }}
-                            resizeMode="cover"
-                        /> */}
+                            resizeMode='contain'
+                        />
                         <MovieTitle>{movie.Title}</MovieTitle>
+                        <MovieInfo>{movie.Year} - {movie.Type}</MovieInfo>
 
-                        <FavoriteContainer>
+                        <ButtonContainer>
                             <FavoriteButton onPress={() => addToFavorites(movie)}>
                                 <StyledText>Ajouter aux favoris</StyledText>
                             </FavoriteButton>
-                        </FavoriteContainer>
+                            <WatchListButton onPress={() => addToWatchList(movie)}>
+                                <StyledText>A regarder</StyledText>
+                            </WatchListButton>
+                        </ButtonContainer>
                     </MovieList>
                 ))}
             </MoviesContainer>
@@ -82,7 +84,7 @@ const Container = styled.View`
     background-color: #223343;
     align-items: center;
     justify-content: flex-start;
-    padding-top: 70px;
+    padding-top: 30px;
 `;
 
 const PageTitle = styled.Text`
@@ -92,13 +94,6 @@ const PageTitle = styled.Text`
     text-align: center;
     margin-bottom: 20px;
 `;
-
-const StyledButton = styled.TouchableOpacity`
-    background-color: grey;
-    color: black;
-    margin-bottom: 10px;
-    padding: 10px;
-`
 
 const StyledText = styled.Text`
     color: white;
@@ -117,33 +112,42 @@ const SearchInput = styled.TextInput`
     width: 370px;
     background-color: #fff;
     border-radius: 8px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     border: 2px;
     border-color: #FF4C4C;
 `;
 
 const MoviesContainer = styled.ScrollView`
     flex: 1;
+    width: 300px;
 `;
 
 const MovieList = styled.View`
     flex: 1;
+    padding: 20px;
     margin-bottom: 20px;
     align-items: center;
+    background-color: #445565;
 `;
 
 const MovieTitle = styled.Text`
     color: #fff;
     font-size: 18px;
     font-weight: 700;
-    padding: 20px;
-    background-color: #445565;
-    width: 370px;
+    padding-top: 10px;
+    text-align: center;
 `;
 
-const FavoriteContainer = styled.View`
-    flex: 1;
-    width: 200px;
+const MovieInfo = styled.Text`
+    color: #fff;
+    font-size: 16px;
+    font-weight: 300;
+    text-align: center;
+`;
+
+const ButtonContainer = styled.View`
+    flex-direction: row;
+    gap: 20px;
     align-items: center;
 `
 
@@ -153,7 +157,16 @@ const FavoriteButton = styled.TouchableOpacity`
     padding: 10px;
     background-color: #FF4C4C;
     border-radius: 8px;
-    margin-top: 10px;
+    margin-top: 20px;
+`
+
+const WatchListButton = styled.TouchableOpacity`
+    color: white;
+    font-size: 16px;
+    padding: 10px;
+    background-color: #FF4C4C;
+    border-radius: 8px;
+    margin-top: 20px;
 `
 
 export default Home

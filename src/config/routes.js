@@ -3,21 +3,25 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import Home from '../screen/home'
 import Favorites from '../screen/favorites'
+import Watchlist from '../screen/watchlist'
 import styled from 'styled-components'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 
 const Routes = () => {
     return (
         <GlobalSafeArea>
             <NavigationContainer>
-                <Stack.Navigator
+                <Tab.Navigator
                     screenOptions={{
                         headerShown: false,
-                    }}>
-                    <Stack.Screen name='Home' component={Home} />
-                    <Stack.Screen name='Favorites' component={Favorites} />
-                </Stack.Navigator>
+                    }}
+                >
+                    <Tab.Screen name="Recherche" component={Home} />
+                    <Tab.Screen name="Favoris" component={Favorites} />
+                    <Tab.Screen name="Watchlist" component={Watchlist} />
+                </Tab.Navigator>
             </NavigationContainer>
         </GlobalSafeArea>
     )
