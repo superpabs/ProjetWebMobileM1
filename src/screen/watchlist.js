@@ -1,6 +1,7 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from 'react-native';
 
 const Watchlist = () => {
 
@@ -18,13 +19,18 @@ const Watchlist = () => {
     };
     getWatchlsit();
 
+
     const removeWatchlist = async (imdbID) => {
         try {
-            // alert('Etes-vous sur de vouloir supprimer ce film de votre watchlist ?')
             const updatedWatchlist = watchlist.filter((movie) => movie.imdbID !== imdbID);
             setWatchlist(updatedWatchlist);
             await AsyncStorage.setItem('watchlist', JSON.stringify(updatedWatchlist));
-            alert('Le film a bien été supprimé de votre watchlist !')
+            Alert.alert(
+                'Suppression réussie',
+                'Le film a bien été supprimé de votre watchlist !',
+                [{ text: 'OK'}],
+                { cancelable: false }
+            );
         } catch (error) {
             console.log(error);
         }

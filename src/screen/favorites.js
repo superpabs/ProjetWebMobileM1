@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from 'react-native';
 
 const Favorites = () => {
 
@@ -18,12 +19,17 @@ const Favorites = () => {
     };
     getFavorites();
 
-    const removeFavorite = async (imdbID) => {
+        const removeFavorite = async (imdbID) => {
         try {
             const updatedFavorites = favorites.filter((movie) => movie.imdbID !== imdbID);
             setFavorites(updatedFavorites);
             await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-            alert('Le film a bien été supprimé de vos favoris !')
+            Alert.alert(
+                'Suppression réussie',
+                'Le film ou série a bien été supprimé de vos favoris !',
+                [{ text: 'OK'}],
+                { cancelable: false }
+            );
         } catch (error) {
             console.log(error);
         }

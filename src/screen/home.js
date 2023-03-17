@@ -2,15 +2,18 @@ import axios from 'axios'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator } from 'react-native';
 
 const Home = () => {
 
+    const [isLoading, setIsLoading] = useState(false);
     const [searchMovie, setSearchMovie] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [favorites, setFavorites] = useState([]);
     const [watchlist, setWatchlist] = useState([]);
 
     const handleSearch = async () => {
+        setIsLoading(true);
         try {
             const response = await axios.get(
                 `http://www.omdbapi.com/?s=${searchMovie}&apikey=513876dc`
@@ -23,16 +26,19 @@ const Home = () => {
         } catch (err) {
             console.log(err);
         }
+        setIsLoading(false);
     }
 
     const handleAddToFavorites = async (movie) => {
         if (favorites.includes(movie)) {
             alert("Ce film est déjà dans votre liste de favoris !");
         } else {
-            const updatedFavorites = [...favorites, movie];
-            setFavorites(updatedFavorites);
             try {
+                setIsLoading(true);
+                const updatedFavorites = [...favorites, movie];
+                setFavorites(updatedFavorites);
                 await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+                setIsLoading(false);
                 alert("Le film a été ajouté à votre liste de favoris !");
             } catch (error) {
                 console.log(error);
@@ -44,10 +50,12 @@ const Home = () => {
         if (watchlist.includes(movie)) {
             alert("Ce film est déjà dans votre watchlist !");
         } else {
-            const updatedWatchlist = [...watchlist, movie];
-            setWatchlist(updatedWatchlist);
             try {
+                setIsLoading(true);
+                const updatedWatchlist = [...watchlist, movie];
+                setWatchlist(updatedWatchlist);
                 await AsyncStorage.setItem('watchlist', JSON.stringify(updatedWatchlist));
+                setIsLoading(false);
                 alert("Le film a été ajouté à votre watchlist !");
             } catch (error) {
                 console.log(error);
@@ -71,27 +79,31 @@ const Home = () => {
                 </SearchButton>
             </SearchContainer>
 
-            <MoviesContainer>
-                {searchResults.map((movie) => (
-                    <MovieList key={movie.imdbID}>
-                        <MovieImage source={{ uri: movie.Poster }} />
+            {isLoading ? (
+                <ActivityIndicator />
+            ) : (
+                <MoviesContainer>
+                    {searchResults.map((movie) => (
+                        <MovieList key={movie.imdbID}>
+                            <MovieImage source={{ uri: movie.Poster }} />
 
-                        <MovieInfo>
-                            <MovieTitle>{movie.Title}{'\n'}</MovieTitle>
-                            <MovieDetails>{movie.Year} - {movie.Type}</MovieDetails>
-                        </MovieInfo>
+                            <MovieInfo>
+                                <MovieTitle>{movie.Title}{'\n'}</MovieTitle>
+                                <MovieDetails>{movie.Year} - {movie.Type}</MovieDetails>
+                            </MovieInfo>
 
-                        <ButtonContainer>
-                            <FavoriteButton onPress={() => handleAddToFavorites(movie)}>
-                                <StyledText>Add to favorites</StyledText>
-                            </FavoriteButton>
-                            <WatchListButton onPress={() => handleAddToWatchlist(movie)}>
-                                <StyledText>Add to watchlist</StyledText>
-                            </WatchListButton>
-                        </ButtonContainer>
-                    </MovieList>
-                ))}
-            </MoviesContainer>
+                            <ButtonContainer>
+                                <FavoriteButton onPress={() => handleAddToFavorites(movie)}>
+                                    <StyledText>Add to favorites</StyledText>
+                                </FavoriteButton>
+                                <WatchListButton onPress={() => handleAddToWatchlist(movie)}>
+                                    <StyledText>Add to watchlist</StyledText>
+                                </WatchListButton>
+                            </ButtonContainer>
+                        </MovieList>
+                    ))}
+                </MoviesContainer>
+            )}
         </Container>
     )
 }
@@ -122,12 +134,12 @@ const SearchContainer = styled.View`
     margin: 20px;
     align-items: center;
     flex-direction: row;
-    gap: 20px;
+    gap: 8px;
 `;
 
 const SearchInput = styled.TextInput`
     flex: 1;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 300;
     padding: 14px;
     background-color: #fff;
