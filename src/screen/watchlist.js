@@ -20,6 +20,7 @@ const Watchlist = () => {
 
     const removeWatchlist = async (imdbID) => {
         try {
+            // alert('Etes-vous sur de vouloir supprimer ce film de votre watchlist ?')
             const updatedWatchlist = watchlist.filter((movie) => movie.imdbID !== imdbID);
             setWatchlist(updatedWatchlist);
             await AsyncStorage.setItem('watchlist', JSON.stringify(updatedWatchlist));
