@@ -18,7 +18,7 @@ const Routes = () => {
                         headerShown: false,
                     }}
                 >
-                    <Tab.Screen name="Recherche" component={Home} />
+                    <Tab.Screen name="Home" component={Home} />
                     <Tab.Screen name="Favoris" component={Favorites} />
                     <Tab.Screen name="Watchlist" component={Watchlist} />
                 </Tab.Navigator>

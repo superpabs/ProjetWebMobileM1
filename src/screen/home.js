@@ -1,40 +1,55 @@
 import axios from 'axios'
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import { Image } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Home = props => {
+const Home = () => {
 
-    const apiurl = 'http://www.omdbapi.com/?i=tt3896198&apikey=513876dc'
-
-    const [searchMovie, setSearchMovie] = useState({
-        s: "Batman",
-        searchResults: [],
-        selected: {}
-    })
-
+    const [searchMovie, setSearchMovie] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
     const [favorites, setFavorites] = useState([]);
-    const [watchList, setWatchList] = useState([]);
+    const [watchlist, setWatchlist] = useState([]);
 
-    const search = () => {
-        axios(apiurl + "&s=" + searchMovie.s).then(({ data }) => {
-            let searchResults = data.Search;
-            // console.log(searchResults)
-            setSearchMovie(prevSearch => {
-                return { ...prevSearch, searchResults: searchResults }
-            })
-        })
+    const handleSearch = async () => {
+        try {
+            const response = await axios.get(
+                `http://www.omdbapi.com/?s=${searchMovie}&apikey=513876dc`
+            );
+            setSearchResults(response.data.Search);
+        } catch (err) {
+            console.log(err);
+        }
     }
 
-    const addToFavorites = (movie) => {
-        setFavorites([...favorites, movie])
-        console.log(setFavorites)
-    }
+    const handleAddToFavorites = async (movie) => {
+        if (favorites.includes(movie)) {
+            alert("Ce film est déjà dans votre liste de favoris !");
+        } else {
+            const updatedFavorites = [...favorites, movie];
+            setFavorites(updatedFavorites);
+            try {
+                await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+                alert("Le film a été ajouté à votre liste de favoris !");
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    };
 
-    const addToWatchList = (movie) => {
-        setWatchList([...watchList, movie])
-        console.log(setWatchList)
-    }
+    const handleAddToWatchlist = async (movie) => {
+        if (watchlist.includes(movie)) {
+            alert("Ce film est déjà dans votre watchlist !");
+        } else {
+            const updatedWatchlist = [...watchlist, movie];
+            setWatchlist(updatedWatchlist);
+            try {
+                await AsyncStorage.setItem('watchlist', JSON.stringify(updatedWatchlist));
+                alert("Le film a été ajouté à votre watchlist !");
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    };
 
     return (
         <Container>
@@ -42,34 +57,32 @@ const Home = props => {
 
             <SearchContainer>
                 <SearchInput
-                    onChangeText={text => setSearchMovie(prevSearch => {
-                        return { ...prevSearch, s: text }
-                    })}
-                    onSubmitEditing={search}
-                    value={searchMovie.s}
+                    placeholder="Search for movies or series..."
+                    value={searchMovie}
+                    onChangeText={setSearchMovie}
+                    onSubmitEditing={handleSearch}
                 />
+                <SearchButton onPress={handleSearch}>
+                    <StyledText>Search</StyledText>
+                </SearchButton>
             </SearchContainer>
 
             <MoviesContainer>
-                {searchMovie.searchResults.map(movie => (
+                {searchResults.map((movie) => (
                     <MovieList key={movie.imdbID}>
-                        <Image
-                            source={{ uri: movie.Poster }}
-                            style={{
-                                width: 270,
-                                height: 270
-                            }}
-                            resizeMode='contain'
-                        />
-                        <MovieTitle>{movie.Title}</MovieTitle>
-                        <MovieInfo>{movie.Year} - {movie.Type}</MovieInfo>
+                        <MovieImage source={{ uri: movie.Poster }} />
+
+                        <MovieInfo>
+                            <MovieTitle>{movie.Title}{'\n'}</MovieTitle>
+                            <MovieDetails>{movie.Year} - {movie.Type}</MovieDetails>
+                        </MovieInfo>
 
                         <ButtonContainer>
-                            <FavoriteButton onPress={() => addToFavorites(movie)}>
-                                <StyledText>Ajouter aux favoris</StyledText>
+                            <FavoriteButton onPress={() => handleAddToFavorites(movie)}>
+                                <StyledText>Add to favorites</StyledText>
                             </FavoriteButton>
-                            <WatchListButton onPress={() => addToWatchList(movie)}>
-                                <StyledText>A regarder</StyledText>
+                            <WatchListButton onPress={() => handleAddToWatchlist(movie)}>
+                                <StyledText>Add to watchlist</StyledText>
                             </WatchListButton>
                         </ButtonContainer>
                     </MovieList>
@@ -92,7 +105,7 @@ const PageTitle = styled.Text`
     font-size: 32px;
     font-weight: 700;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 `;
 
 const StyledText = styled.Text`
@@ -102,24 +115,30 @@ const StyledText = styled.Text`
 `;
 
 const SearchContainer = styled.View`
-    margin: 4px;
+    margin: 20px;
+    align-items: center;
+    flex-direction: row;
+    gap: 20px;
 `;
 
 const SearchInput = styled.TextInput`
-    font-size: 20px;
+    flex: 1;
+    font-size: 18px;
     font-weight: 300;
-    padding: 20px;
-    width: 370px;
+    padding: 14px;
     background-color: #fff;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    border: 2px;
-    border-color: #FF4C4C;
+    border-radius: 10px;
+`;
+
+const SearchButton = styled.TouchableOpacity`
+    background-color: #FF4C4C;
+    padding: 17px;
+    border-radius: 10px;
 `;
 
 const MoviesContainer = styled.ScrollView`
     flex: 1;
-    width: 300px;
+    width: 370px;
 `;
 
 const MovieList = styled.View`
@@ -130,12 +149,10 @@ const MovieList = styled.View`
     background-color: #445565;
 `;
 
-const MovieTitle = styled.Text`
-    color: #fff;
-    font-size: 18px;
-    font-weight: 700;
-    padding-top: 10px;
-    text-align: center;
+const MovieImage = styled.Image`
+    width: 270px;
+    height: 270px;
+    object-fit: contain;
 `;
 
 const MovieInfo = styled.Text`
@@ -143,6 +160,18 @@ const MovieInfo = styled.Text`
     font-size: 16px;
     font-weight: 300;
     text-align: center;
+    margin-top: 14px;
+`;
+
+const MovieTitle = styled.Text`
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+`;
+
+const MovieDetails = styled.Text`
+    color: #fff;
 `;
 
 const ButtonContainer = styled.View`
