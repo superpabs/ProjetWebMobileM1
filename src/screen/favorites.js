@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -6,24 +6,33 @@ const Favorites = () => {
 
     const [favorites, setFavorites] = useState([]);
 
-    useEffect(() => {
-        const getFavorites = async () => {
-            try {
-                const favoritesData = await AsyncStorage.getItem('favorites');
-                if (favoritesData !== null) {
-                    setFavorites(JSON.parse(favoritesData));
-                }
-            } catch (error) {
-                console.log(error);
+    const getFavorites = async () => {
+        try {
+            const favoritesData = await AsyncStorage.getItem('favorites');
+            if (favoritesData !== null) {
+                setFavorites(JSON.parse(favoritesData));
             }
-        };
-        getFavorites();
-    }, []);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    getFavorites();
+
+    const removeFavorite = async (imdbID) => {
+        try {
+            const updatedFavorites = favorites.filter((movie) => movie.imdbID !== imdbID);
+            setFavorites(updatedFavorites);
+            await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+            alert('Le film a bien été supprimé de vos favoris !')
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return (
 
         <Container>
-            <PageTitle>Favoris</PageTitle>
+            <PageTitle>Favorites</PageTitle>
 
             <FavoritesContainer>
                 {favorites.map((movie) => (
@@ -32,8 +41,11 @@ const Favorites = () => {
 
                         <MovieInfo>
                             <MovieTitle>{movie.Title}{'\n'}</MovieTitle>
-                            <MovieDetails>{movie.Year} - {movie.Type}</MovieDetails>
                         </MovieInfo>
+
+                        <DeleteButton onPress={() => removeFavorite(movie.imdbID)} >
+                            <StyledText>Delete</StyledText>
+                        </DeleteButton>
                     </FavoriteList>
                 ))}
             </FavoritesContainer>
@@ -92,8 +104,17 @@ const MovieTitle = styled.Text`
     font-weight: 700;
 `;
 
-const MovieDetails = styled.Text`
-    color: #fff;
+const DeleteButton = styled.TouchableOpacity`
+    background-color: #FF4C4C;
+    padding: 10px;
+    border-radius: 10px;
+    margin-right: 10px;
+`;
+
+const StyledText = styled.Text`
+    color: white;
+    font-size: 16px;
+    text-align: center;
 `;
 
 export default Favorites

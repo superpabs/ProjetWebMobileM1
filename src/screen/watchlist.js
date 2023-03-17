@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import styled from 'styled-components'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -6,19 +6,28 @@ const Watchlist = () => {
 
     const [watchlist, setWatchlist] = useState([]);
 
-    useEffect(() => {
-        const getWatchlsit = async () => {
-            try {
-                const watchlistData = await AsyncStorage.getItem('watchlist');
-                if (watchlistData !== null) {
-                    setWatchlist(JSON.parse(watchlistData));
-                }
-            } catch (error) {
-                console.log(error);
+    const getWatchlsit = async () => {
+        try {
+            const watchlistData = await AsyncStorage.getItem('watchlist');
+            if (watchlistData !== null) {
+                setWatchlist(JSON.parse(watchlistData));
             }
-        };
-        getWatchlsit();
-    }, []);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    getWatchlsit();
+
+    const removeWatchlist = async (imdbID) => {
+        try {
+            const updatedWatchlist = watchlist.filter((movie) => movie.imdbID !== imdbID);
+            setWatchlist(updatedWatchlist);
+            await AsyncStorage.setItem('watchlist', JSON.stringify(updatedWatchlist));
+            alert('Le film a bien été supprimé de votre watchlist !')
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return (
 
@@ -32,8 +41,11 @@ const Watchlist = () => {
 
                         <MovieInfo>
                             <MovieTitle>{movie.Title}{'\n'}</MovieTitle>
-                            <MovieDetails>{movie.Year} - {movie.Type}</MovieDetails>
                         </MovieInfo>
+
+                        <DeleteButton onPress={() => removeWatchlist(movie.imdbID)} >
+                            <StyledText>Delete</StyledText>
+                        </DeleteButton>
                     </WatchlistList>
                 ))}
             </WatchlistContainer>
@@ -92,8 +104,17 @@ const MovieTitle = styled.Text`
     font-weight: 700;
 `;
 
-const MovieDetails = styled.Text`
-    color: #fff;
+const DeleteButton = styled.TouchableOpacity`
+    background-color: #FF4C4C;
+    padding: 10px;
+    border-radius: 10px;
+    margin-right: 10px;
+`;
+
+const StyledText = styled.Text`
+    color: white;
+    font-size: 16px;
+    text-align: center;
 `;
 
 export default Watchlist

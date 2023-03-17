@@ -15,7 +15,11 @@ const Home = () => {
             const response = await axios.get(
                 `http://www.omdbapi.com/?s=${searchMovie}&apikey=513876dc`
             );
-            setSearchResults(response.data.Search);
+            if (response.data.Response === "False") {
+                alert('Aucun résultat trouvé !');
+            } else {
+                setSearchResults(response.data.Search);
+            }
         } catch (err) {
             console.log(err);
         }
@@ -138,7 +142,6 @@ const SearchButton = styled.TouchableOpacity`
 
 const MoviesContainer = styled.ScrollView`
     flex: 1;
-    width: 370px;
 `;
 
 const MovieList = styled.View`
