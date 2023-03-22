@@ -28,7 +28,7 @@ const Watchlist = () => {
             Alert.alert(
                 'Suppression réussie',
                 'Le film a bien été supprimé de votre watchlist !',
-                [{ text: 'OK'}],
+                [{ text: 'OK' }],
                 { cancelable: false }
             );
         } catch (error) {

@@ -19,7 +19,7 @@ const Favorites = () => {
     };
     getFavorites();
 
-        const removeFavorite = async (imdbID) => {
+    const removeFavorite = async (imdbID) => {
         try {
             const updatedFavorites = favorites.filter((movie) => movie.imdbID !== imdbID);
             setFavorites(updatedFavorites);
@@ -27,7 +27,7 @@ const Favorites = () => {
             Alert.alert(
                 'Suppression réussie',
                 'Le film ou série a bien été supprimé de vos favoris !',
-                [{ text: 'OK'}],
+                [{ text: 'OK' }],
                 { cancelable: false }
             );
         } catch (error) {
