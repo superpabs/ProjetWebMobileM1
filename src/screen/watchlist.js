@@ -7,7 +7,7 @@ const Watchlist = () => {
 
     const [watchlist, setWatchlist] = useState([]);
 
-    const getWatchlsit = async () => {
+    const getWatchlist = async () => {
         try {
             const watchlistData = await AsyncStorage.getItem('watchlist');
             if (watchlistData !== null) {
@@ -17,7 +17,7 @@ const Watchlist = () => {
             console.log(error);
         }
     };
-    getWatchlsit();
+    getWatchlist();
 
 
     const removeWatchlist = async (imdbID) => {

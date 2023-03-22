@@ -90,7 +90,7 @@ const Home = () => {
 
                             <MovieInfo>
                                 <MovieTitle>{movie.Title}{'\n'}</MovieTitle>
-                                <MovieDetails>{movie.Year} - {movie.Type}</MovieDetails>
+                                <MovieDetails>{movie.Year} - {movie.Type} - {movie.Genre}</MovieDetails>
                             </MovieInfo>
 
                             <ButtonContainer>
