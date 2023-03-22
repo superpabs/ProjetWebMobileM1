@@ -2,7 +2,8 @@ import axios from 'axios'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, Alert } from 'react-native';
+
 
 const Home = () => {
 
@@ -19,7 +20,12 @@ const Home = () => {
                 `http://www.omdbapi.com/?s=${searchMovie}&apikey=513876dc`
             );
             if (response.data.Response === "False") {
-                alert('Aucun résultat trouvé !');
+                Alert.alert(
+                    'Désolé',
+                    'Aucun film ne correspond à votre recherche !',
+                    [{ text: 'OK' }],
+                    { cancelable: false }
+                );
             } else {
                 setSearchResults(response.data.Search);
             }
@@ -31,7 +37,12 @@ const Home = () => {
 
     const handleAddToFavorites = async (movie) => {
         if (favorites.includes(movie)) {
-            alert("Ce film est déjà dans votre liste de favoris !");
+            Alert.alert(
+                'Attention',
+                'Ce film est déjà dans votre liste de favoris !',
+                [{ text: 'OK' }],
+                { cancelable: false }
+            );
         } else {
             try {
                 setIsLoading(true);
@@ -39,7 +50,12 @@ const Home = () => {
                 setFavorites(updatedFavorites);
                 await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
                 setIsLoading(false);
-                alert("Le film a été ajouté à votre liste de favoris !");
+                Alert.alert(
+                    'Ajout réussi',
+                    'Ce film a été ajouté dans votre liste de favoris !',
+                    [{ text: 'OK' }],
+                    { cancelable: false }
+                );
             } catch (error) {
                 console.log(error);
             }
@@ -48,7 +64,12 @@ const Home = () => {
 
     const handleAddToWatchlist = async (movie) => {
         if (watchlist.includes(movie)) {
-            alert("Ce film est déjà dans votre watchlist !");
+            Alert.alert(
+                'Attention',
+                'Ce film est déjà dans votre watchlist !',
+                [{ text: 'OK' }],
+                { cancelable: false }
+            );
         } else {
             try {
                 setIsLoading(true);
@@ -56,7 +77,12 @@ const Home = () => {
                 setWatchlist(updatedWatchlist);
                 await AsyncStorage.setItem('watchlist', JSON.stringify(updatedWatchlist));
                 setIsLoading(false);
-                alert("Le film a été ajouté à votre watchlist !");
+                Alert.alert(
+                    'Ajout réussi',
+                    'Ce film a été ajouté dans votre watchlist !',
+                    [{ text: 'OK' }],
+                    { cancelable: false }
+                );
             } catch (error) {
                 console.log(error);
             }
